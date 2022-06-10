@@ -14,3 +14,9 @@
 ### Saga
 
 ![alt text](diagrams/saga.jpg)
+
+### Services repos
+
+ - [Orders-tracking](https://gitlab.ozon.dev/zBlur/orders-tracking)
+ - [Logistics](https://gitlab.ozon.dev/zBlur/logistics)
+ - [Orders](https://gitlab.ozon.dev/zBlur/orders)
