@@ -1,3 +1,4 @@
 .idea
 
-kafka_data
+kafka/kafka_data
+monitoring/grafana/

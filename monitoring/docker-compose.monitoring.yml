@@ -1,0 +1,84 @@
+version: "3.7"
+
+volumes:
+  prometheus-data: {}
+
+networks:
+  kafka-net:
+
+services:
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus-conf:/etc/prometheus
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
+    networks:
+      - kafka-net
+    logging:
+      options:
+        max-size: 100m
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    user: root
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana-conf:/etc/grafana/
+    ports:
+      - "3131:3000"
+    restart: unless-stopped
+    networks:
+      - kafka-net
+    logging:
+      options:
+        max-size: 100m
+
+  cadvisor:
+    command:
+      - '-port=8080'
+      - '-housekeeping_interval=5s'
+      - '-docker_only=true'
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    privileged: true
+    ports:
+      - 10321:8080
+    restart: unless-stopped
+    devices:
+      - "/dev/kmsg:/dev/kmsg"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro
+    logging:
+      options:
+        max-size: 100m
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - --path.rootfs=/host
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --web.listen-address=0.0.0.0:1515
+    network_mode: host
+    pid: host
+    ports:
+      - '1515:1515'
+    restart: unless-stopped
+    volumes:
+      - /:/host:ro,rslave
+    logging:
+      options:
+        max-size: 100m

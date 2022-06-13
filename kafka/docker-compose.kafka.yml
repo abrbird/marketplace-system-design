@@ -1,0 +1,96 @@
+version: '3.3'
+
+services:
+  zk1:
+    image: confluentinc/cp-zookeeper:7.1.1
+    hostname: zk1
+    container_name: zk1
+    tmpfs: "/datalog"
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-net
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SERVERS: zk1:22888:23888
+
+  kafka-1:
+    image: confluentinc/cp-kafka:7.1.1
+    container_name: kafka-1
+    hostname: kafka-1
+    restart: on-failure
+    ports:
+      - "9092:9092"
+      - "19092:19092"
+    depends_on:
+      - zk1
+    networks:
+      - kafka-net
+    user: root
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_ZOOKEEPER_CONNECT: "zk1:2181"
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka-1:9092,LISTENER_DOCKER_EXTERNAL://${MY_IP:-127.0.0.1}:19092
+      KAFKA_LOG_DIRS: /kafka/logs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./kafka_data/1:/kafka
+
+  kafka-2:
+    image: confluentinc/cp-kafka:7.1.1
+    container_name: kafka-2
+    hostname: kafka-2
+    restart: on-failure
+    ports:
+      - "9093:9092"
+      - "29092:29092"
+    depends_on:
+      - zk1
+    networks:
+      - kafka-net
+    user: root
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_ZOOKEEPER_CONNECT: "zk1:2181"
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka-2:9093,LISTENER_DOCKER_EXTERNAL://${MY_IP:-127.0.0.1}:29092
+      KAFKA_LOG_DIRS: /kafka/logs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./kafka_data/2:/kafka
+
+  kafka-3:
+    image: confluentinc/cp-kafka:7.1.1
+    container_name: kafka-3
+    hostname: kafka-3
+    restart: on-failure
+    ports:
+      - "9094:9092"
+      - "39092:39092"
+    depends_on:
+      - zk1
+    networks:
+      - kafka-net
+    user: root
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zk1:2181"
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka-3:9094,LISTENER_DOCKER_EXTERNAL://${MY_IP:-127.0.0.1}:39092
+      KAFKA_LOG_DIRS: /kafka/logs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./kafka_data/3:/kafka
+
+networks:
+  kafka-net:
+    external: true
