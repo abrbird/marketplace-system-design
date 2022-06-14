@@ -5,6 +5,7 @@ volumes:
 
 networks:
   kafka-net:
+    driver: bridge
 
 services:
 
@@ -82,3 +83,12 @@ services:
     logging:
       options:
         max-size: 100m
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    restart: on-failure
+    ports:
+      - "6831:6831/udp"
+      - '16686:16686'
+    networks:
+      - kafka-net
