@@ -19,8 +19,19 @@ scrape_configs:
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
-      - targets: [ '172.17.0.1:10321' ]
+      - targets: ['172.17.0.1:10321']
 
+  ## service-errors
+  - job_name: 'service-errors'
+    metrics_path: /prometheus
+    static_configs:
+      - targets: ['172.17.0.1:8500', '172.17.0.1:8501', '172.17.0.1:8502']
+
+  ## order-tracking-app
+  - job_name: 'pprof'
+    metrics_path: /debug/vars
+    static_configs:
+      - targets: ['172.17.0.1:8400', '172.17.0.1:8401', '172.17.0.1:8402']
 
 #        ### Postgres-exporter
 #  - job_name: 'postgres-exporter'
