@@ -23,7 +23,7 @@ scrape_configs:
 
   ## service-errors
   - job_name: 'service-errors'
-    metrics_path: /prometheus
+    metrics_path: /metrics
     static_configs:
       - targets: ['172.17.0.1:8500', '172.17.0.1:8501', '172.17.0.1:8502']
 
