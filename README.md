@@ -17,6 +17,6 @@
 
 ### Services repos
 
- - [Orders-tracking](https://gitlab.ozon.dev/zBlur/orders-tracking)
- - [Logistics](https://gitlab.ozon.dev/zBlur/logistics)
- - [Orders](https://gitlab.ozon.dev/zBlur/orders)
+ - [Orders-tracking](https://github.com/abrbird/orders-tracking)
+ - [Logistics](https://github.com/abrbird/logistics)
+ - [Orders](https://github.com/abrbird/orders)
